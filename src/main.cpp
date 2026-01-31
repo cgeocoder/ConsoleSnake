@@ -5,60 +5,38 @@
 #include <conio.h>
 #include <Windows.h>
 
-#define MAX_WIDHT 50
-#define MAX_HEIGHT 50
+#define MAX_WIDHT 98
+#define MAX_HEIGHT 28
+
 
 const char* const FIELD =
-"##################################################\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"#                                                #\n"
-"##################################################";
+"##################################################################################################\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"#                                                                                                #\n"
+"##################################################################################################";
 
 enum class SnakeDirection {
 	none,
@@ -81,7 +59,7 @@ private:
 	unsigned int m_Length;
 	std::atomic<SnakeDirection> m_Direction;
 	std::atomic<bool> m_Alive;
-	std::thread m_DirectionUpdatingTherad;
+	std::thread m_DirectionUpdatingTheread;
 	std::vector<Vec2i> m_BodyPos;
 	Vec2i m_Apple;
 	unsigned int m_Points;
@@ -92,7 +70,7 @@ public:
 		m_Direction = SnakeDirection::up;
 		m_Alive = true;
 
-		m_DirectionUpdatingTherad = std::thread{ &Snake::direction_updating, this };
+		m_DirectionUpdatingTheread = std::thread{ &Snake::direction_updating, this };
 
 		for (int i = 0; i < 4; ++i) {
 			m_BodyPos.push_back({0, -i});
@@ -102,7 +80,7 @@ public:
 	}
 
 	~Snake() {
-		m_DirectionUpdatingTherad.join();
+		m_DirectionUpdatingTheread.join();
 	}
 
 	void update() {
@@ -141,7 +119,6 @@ public:
 		}
 	}
 
-	// field 50 x 50
 	void draw() {
 		char field[(MAX_WIDHT + 1) * MAX_HEIGHT + 1] = {};
 
@@ -179,34 +156,26 @@ private:
 			sd['s'] = sd['S'] = SnakeDirection::down;
 		}
 
+		SnakeDirection sd2[256] = {};
+
+		// Arrows: right, left, up, down
+		{
+			sd2[77] = SnakeDirection::right;
+			sd2[75] = SnakeDirection::left;
+			sd2[72] = SnakeDirection::up;
+			sd2[80] = SnakeDirection::down;
+		}
+
 		while (m_Alive.load()) {
 			if (_kbhit()) {
 				int key0 = _getch();
 
 				SnakeDirection new_direction = SnakeDirection::none;
 
-				if (key0 == 224) {
-					switch (_getch()) {
-					case 77:
-						new_direction = SnakeDirection::right;
-						break;
-
-					case 75:
-						new_direction = SnakeDirection::left;
-						break;
-
-					case 72:
-						new_direction = SnakeDirection::up;
-						break;
-
-					case 80:
-						new_direction = SnakeDirection::down;
-						break;
-					}
-				}
-				else {
+				if (key0 == 224)
+					new_direction = sd2[_getch()];
+				else
 					new_direction = sd[key0];
-				}
 
 				if (new_direction != SnakeDirection::none) {
 
@@ -222,8 +191,8 @@ private:
 	void put_new_apple() {
 		std::srand(std::time(nullptr));
 
-		m_Apple.x = (rand() % 25) - 25;
-		m_Apple.y = (rand() % 25) - 25;
+		m_Apple.x = (rand() % (MAX_WIDHT / 2)) - (MAX_WIDHT / 2);
+		m_Apple.y = (rand() % (MAX_HEIGHT / 2)) - (MAX_HEIGHT / 2);
 	}
 };
 
@@ -236,6 +205,8 @@ int main(int argc, char* argv[]) {
 		snake.sleep();
 	 	snake.draw();
 	}
+
+	_getch();
 
 	return 0;
 }
