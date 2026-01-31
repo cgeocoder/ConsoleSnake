@@ -131,7 +131,6 @@ public:
 		field[((MAX_HEIGHT / 2) - m_Apple.y) * (MAX_WIDHT + 1) + ((MAX_WIDHT / 2) + m_Apple.x)] = '@';
 
 		system("cls");
-
 		printf("\tLength: %llu\t|\tPoints: %ld\n", m_BodyPos.size(), m_Points);
 		puts(field);
 	}
@@ -141,7 +140,7 @@ public:
 	}
 	
 	inline void sleep() {
-		std::this_thread::sleep_for(std::chrono::milliseconds(100 / (m_Points + 1)));
+		std::this_thread::sleep_for(std::chrono::milliseconds(200 / (m_Points + 1)));
 	}
 
 private:
@@ -191,8 +190,8 @@ private:
 	void put_new_apple() {
 		std::srand(std::time(nullptr));
 
-		m_Apple.x = (rand() % (MAX_WIDHT / 2)) - (MAX_WIDHT / 2);
-		m_Apple.y = (rand() % (MAX_HEIGHT / 2)) - (MAX_HEIGHT / 2);
+		m_Apple.x = (rand() % (MAX_WIDHT / 2 - 1)) - (MAX_WIDHT / 2 - 1);
+		m_Apple.y = (rand() % (MAX_HEIGHT / 2 - 1)) - (MAX_HEIGHT / 2 - 1);
 	}
 };
 
